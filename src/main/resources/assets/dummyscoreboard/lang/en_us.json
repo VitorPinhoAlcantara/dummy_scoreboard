@@ -1,0 +1,35 @@
+{
+  "itemGroup.dummyscoreboard": "Dummy Scoreboard",
+
+  "item.dummyscoreboard.scoreboard_dummy_spawner": "Scoreboard Dummy",
+  "item.dummyscoreboard.scoreboard_dummy.tooltip.configure": "Right-click with a Stick to view the leaderboard",
+  "item.dummyscoreboard.scoreboard_dummy.tooltip.remove": "Hit with a Stick to remove it",
+  "entity.dummyscoreboard.scoreboard_dummy": "Scoreboard Dummy",
+
+  "gui.dummyscoreboard.title": "Biggest Hit Leaderboard",
+  "gui.dummyscoreboard.title.global": "Global Leaderboard",
+  "gui.dummyscoreboard.title.local": "Local Leaderboard (this server)",
+  "gui.dummyscoreboard.mode.global": "Mode: Global",
+  "gui.dummyscoreboard.mode.local": "Mode: Local",
+  "gui.dummyscoreboard.empty": "No records yet - be the first!",
+  "gui.dummyscoreboard.entry": "%s. %s - %s damage",
+
+  "dummyscoreboard.record.local": "New local record! You're now #%s on this server's leaderboard.",
+  "dummyscoreboard.record.achieved": "New record! You're now #%s on the leaderboard (pending confirmation).",
+  "dummyscoreboard.record.confirmed": "Record confirmed! Sending to the server... You're #%s on the leaderboard.",
+  "dummyscoreboard.record.rejected": "The leaderboard updated in the meantime and your record didn't make the cut :(",
+
+  "dummyscoreboard.configuration.title": "Dummy Scoreboard - Config",
+  "dummyscoreboard.configuration.section.dummyscoreboard.common.toml": "Leaderboard",
+  "dummyscoreboard.configuration.section.dummyscoreboard.common.toml.title": "Leaderboard",
+  "dummyscoreboard.configuration.modpackId": "Modpack ID",
+  "dummyscoreboard.configuration.modpackId.tooltip": "Identifies this server's modpack to the leaderboard worker. Every server sharing a leaderboard must use the same value. Leave blank to disable reporting.",
+  "dummyscoreboard.configuration.leaderboardRefreshSeconds": "Leaderboard refresh interval (seconds)",
+  "dummyscoreboard.configuration.leaderboardRefreshSeconds.tooltip": "Minimum time between this server re-checking the worker for leaderboard updates.",
+  "dummyscoreboard.configuration.recordDebounceSeconds": "Record debounce (seconds)",
+  "dummyscoreboard.configuration.recordDebounceSeconds.tooltip": "How long to wait after a qualifying hit before submitting it, in case the same player beats it again shortly after.",
+  "dummyscoreboard.configuration.workerBaseUrl": "Worker base URL",
+  "dummyscoreboard.configuration.workerBaseUrl.tooltip": "Base URL of the leaderboard worker (e.g. http://127.0.0.1:8787 for a local wrangler dev). Leave blank to use the built-in local stub instead of a real HTTP backend.",
+  "dummyscoreboard.configuration.workerApiKey": "Worker API key",
+  "dummyscoreboard.configuration.workerApiKey.tooltip": "Sent as the X-Api-Key header on every submission, if set. Must match the worker's SUBMIT_API_KEY."
+}

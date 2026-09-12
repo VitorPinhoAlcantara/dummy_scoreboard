@@ -1,0 +1,18 @@
+{
+  "name": "dummyscoreboard-worker",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Cloudflare Worker backing the Dummy Scoreboard cross-server leaderboard.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create dummyscoreboard",
+    "db:migrate:local": "wrangler d1 execute dummyscoreboard --local --file=./schema.sql",
+    "db:migrate:remote": "wrangler d1 execute dummyscoreboard --remote --file=./schema.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260911.1",
+    "typescript": "^5.7.0",
+    "wrangler": "^4.131.1"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "dummyscoreboard:item/scoreboard_dummy_spawner"
+  }
+}

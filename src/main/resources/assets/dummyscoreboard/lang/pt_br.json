@@ -1,0 +1,35 @@
+{
+  "itemGroup.dummyscoreboard": "Dummy Scoreboard",
+
+  "item.dummyscoreboard.scoreboard_dummy_spawner": "Dummy Placar",
+  "item.dummyscoreboard.scoreboard_dummy.tooltip.configure": "Clique direito com um Graveto para ver o ranking",
+  "item.dummyscoreboard.scoreboard_dummy.tooltip.remove": "Bata com um Graveto para remover",
+  "entity.dummyscoreboard.scoreboard_dummy": "Dummy Placar",
+
+  "gui.dummyscoreboard.title": "Ranking do Maior Hit",
+  "gui.dummyscoreboard.title.global": "Ranking Global",
+  "gui.dummyscoreboard.title.local": "Ranking Local (deste servidor)",
+  "gui.dummyscoreboard.mode.global": "Modo: Global",
+  "gui.dummyscoreboard.mode.local": "Modo: Local",
+  "gui.dummyscoreboard.empty": "Nenhum recorde ainda - seja o primeiro!",
+  "gui.dummyscoreboard.entry": "%s. %s - %s de dano",
+
+  "dummyscoreboard.record.local": "Novo recorde local! Você está em #%s no ranking deste servidor.",
+  "dummyscoreboard.record.achieved": "Novo recorde! Você está em #%s no ranking (aguardando confirmação).",
+  "dummyscoreboard.record.confirmed": "Recorde confirmado! Enviando para o servidor... Você está em #%s no ranking.",
+  "dummyscoreboard.record.rejected": "O ranking foi atualizado nesse meio tempo e seu recorde acabou não entrando :(",
+
+  "dummyscoreboard.configuration.title": "Dummy Scoreboard - Config",
+  "dummyscoreboard.configuration.section.dummyscoreboard.common.toml": "Ranking",
+  "dummyscoreboard.configuration.section.dummyscoreboard.common.toml.title": "Ranking",
+  "dummyscoreboard.configuration.modpackId": "ID do Modpack",
+  "dummyscoreboard.configuration.modpackId.tooltip": "Identifica o modpack deste servidor pro worker do ranking. Todo servidor que compartilha o mesmo ranking precisa usar o mesmo valor. Deixe em branco para desativar o envio.",
+  "dummyscoreboard.configuration.leaderboardRefreshSeconds": "Intervalo de atualização do ranking (segundos)",
+  "dummyscoreboard.configuration.leaderboardRefreshSeconds.tooltip": "Tempo mínimo entre o servidor checar o worker de novo por atualizações do ranking.",
+  "dummyscoreboard.configuration.recordDebounceSeconds": "Espera do recorde (segundos)",
+  "dummyscoreboard.configuration.recordDebounceSeconds.tooltip": "Quanto tempo esperar depois de um hit qualificado antes de enviá-lo, caso o mesmo jogador bata mais forte ainda logo em seguida.",
+  "dummyscoreboard.configuration.workerBaseUrl": "URL base do worker",
+  "dummyscoreboard.configuration.workerBaseUrl.tooltip": "URL base do worker do ranking (ex: http://127.0.0.1:8787 pra um wrangler dev local). Deixe em branco pra usar o stub local em vez de um backend HTTP de verdade.",
+  "dummyscoreboard.configuration.workerApiKey": "Chave de API do worker",
+  "dummyscoreboard.configuration.workerApiKey.tooltip": "Enviada como header X-Api-Key em toda submissão, se definida. Precisa bater com o SUBMIT_API_KEY do worker."
+}

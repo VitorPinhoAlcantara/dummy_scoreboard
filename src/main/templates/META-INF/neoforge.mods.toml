@@ -1,0 +1,40 @@
+license="${mod_license}"
+
+[[mods]] #mandatory
+modId="${mod_id}" #mandatory
+version="${mod_version}" #mandatory
+displayName="${mod_name}" #mandatory
+description='''
+Addon for Training Dummy: a second dummy variant that tracks the single
+biggest hit landed on it and reports it to a cross-server leaderboard.
+'''
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${neo_version},)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="trainingdummy"
+    type="required"
+    reason="Dummy Scoreboard's entity extends Training Dummy's own dummy entity"
+    versionRange="[${trainingdummy_version},)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="curios"
+    type="optional"
+    reason="Lets the leaderboard snapshot include the player's equipped Curios accessories"
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
