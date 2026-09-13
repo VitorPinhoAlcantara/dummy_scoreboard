@@ -17,6 +17,8 @@
   hit por completo, local e global) quanto de forma independente no worker (rejeita a submissão
   mesmo que alguém tente pular a checagem do mod com um client modificado ou POST direto).
 - Jogadores em modo Creative não têm mais hits contabilizados em nenhum ranking.
+- Chave de submissão do worker agora é **por modpack** (coluna `api_key` na tabela `modpacks`),
+  em vez de uma única chave global - se a chave de um modpack vazar, só aquele modpack é afetado.
 
 ## [1.0.1] - 2026-09-12
 
