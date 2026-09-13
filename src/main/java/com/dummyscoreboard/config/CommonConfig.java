@@ -25,7 +25,7 @@ public final class CommonConfig {
             .comment("After a hit qualifies for the top 10, how long to wait (without an even bigger " +
                     "qualifying hit from the same player) before actually submitting it. Prevents " +
                     "sending a record that's immediately beaten by the same player's next swing.")
-            .defineInRange("recordDebounceSeconds", 600, 5, 3600);
+            .defineInRange("recordDebounceSeconds", 20, 5, 3600);
 
     public static final ModConfigSpec.ConfigValue<String> WORKER_BASE_URL = BUILDER
             .comment("Base URL of the leaderboard worker (e.g. http://127.0.0.1:8787 for a local " +

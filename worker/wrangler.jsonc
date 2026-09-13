@@ -7,10 +7,7 @@
     {
       "binding": "DB",
       "database_name": "dummyscoreboard",
-      // Placeholder - only `wrangler dev` (local mode, the default) is expected to work with
-      // this. Run `npm run db:create` to make a real D1 database and replace this with the id it
-      // prints before ever running `wrangler deploy`.
-      "database_id": "local-only-placeholder-id"
+      "database_id": "2b3f23c9-bf0a-4772-a35b-1a55a1833260"
     }
   ]
 }
