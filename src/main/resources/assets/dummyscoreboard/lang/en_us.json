@@ -8,6 +8,7 @@
 
   "gui.dummyscoreboard.title": "Biggest Hit Leaderboard",
   "gui.dummyscoreboard.title.global": "Global Leaderboard",
+  "gui.dummyscoreboard.title.global.named": "Global Leaderboard - %s",
   "gui.dummyscoreboard.title.local": "Local Leaderboard (this server)",
   "gui.dummyscoreboard.mode.global": "Mode: Global",
   "gui.dummyscoreboard.mode.local": "Mode: Local",
@@ -24,6 +25,8 @@
   "dummyscoreboard.configuration.section.dummyscoreboard.common.toml.title": "Leaderboard",
   "dummyscoreboard.configuration.modpackId": "Modpack ID",
   "dummyscoreboard.configuration.modpackId.tooltip": "Identifies this server's modpack to the leaderboard worker. Every server sharing a leaderboard must use the same value. Leave blank to disable reporting.",
+  "dummyscoreboard.configuration.modpackDisplayName": "Modpack display name",
+  "dummyscoreboard.configuration.modpackDisplayName.tooltip": "Friendly name shown in the global leaderboard's title (e.g. \"ATM 11\"). Purely cosmetic - leave blank to just show a generic title.",
   "dummyscoreboard.configuration.leaderboardRefreshSeconds": "Leaderboard refresh interval (seconds)",
   "dummyscoreboard.configuration.leaderboardRefreshSeconds.tooltip": "Minimum time between this server re-checking the worker for leaderboard updates.",
   "dummyscoreboard.configuration.recordDebounceSeconds": "Record debounce (seconds)",

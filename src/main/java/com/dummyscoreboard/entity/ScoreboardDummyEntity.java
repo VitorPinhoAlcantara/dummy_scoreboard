@@ -1,5 +1,6 @@
 package com.dummyscoreboard.entity;
 
+import com.dummyscoreboard.config.CommonConfig;
 import com.dummyscoreboard.network.OpenScoreboardScreenPayload;
 import com.dummyscoreboard.rank.LeaderboardCache;
 import com.dummyscoreboard.registry.ModItems;
@@ -43,7 +44,8 @@ public class ScoreboardDummyEntity extends DummyEntity {
                 this.getId(),
                 LeaderboardCache.localEntries(),
                 LeaderboardCache.globalEntries(),
-                LeaderboardCache.globalAvailable()));
+                LeaderboardCache.globalAvailable(),
+                CommonConfig.MODPACK_DISPLAY_NAME.get()));
     }
 
     @Override

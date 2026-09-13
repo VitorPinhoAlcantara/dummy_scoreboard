@@ -3,6 +3,7 @@ package com.dummyscoreboard.event;
 import com.dummyscoreboard.DummyScoreboardMod;
 import com.dummyscoreboard.config.CommonConfig;
 import com.dummyscoreboard.entity.ScoreboardDummyEntity;
+import com.dummyscoreboard.integrity.AttackIntegrity;
 import com.dummyscoreboard.rank.LeaderboardCache;
 import com.dummyscoreboard.rank.PendingCandidateTracker;
 import com.dummyscoreboard.snapshot.PlayerCombatSnapshot;
@@ -27,6 +28,18 @@ public final class ScoreboardCombatEvents {
         if (amount <= 0.0F) {
             return;
         }
+        // Creative gives free access to any item/enchantment combination with none of the
+        // progression a real record is supposed to reflect - never eligible for either board.
+        if (attacker.isCreative()) {
+            return;
+        }
+        if (AttackIntegrity.hasTamperedBase(attacker)) {
+            DummyScoreboardMod.LOGGER.warn("Ignoring dummy hit from {} for leaderboard purposes - a combat " +
+                    "attribute's base value doesn't match vanilla defaults (possible /attribute tampering)",
+                    attacker.getGameProfile().name());
+            return;
+        }
+
         String playerName = attacker.getGameProfile().name();
 
         if (LeaderboardCache.qualifiesLocal(playerName, amount)) {

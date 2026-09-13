@@ -15,6 +15,15 @@ public final class CommonConfig {
                     "leaderboard reporting entirely.")
             .define("modpackId", "");
 
+    // Purely cosmetic (shown in the global board's title) - the worker doesn't return this, so the
+    // admin just types in whatever display name they already registered for modpackId in the D1
+    // modpacks table. Leave blank to fall back to the generic "Global Leaderboard" title.
+    public static final ModConfigSpec.ConfigValue<String> MODPACK_DISPLAY_NAME = BUILDER
+            .comment("Friendly name shown in the global leaderboard's title (e.g. \"ATM 11\"). Purely " +
+                    "cosmetic - has no effect on which leaderboard is used, that's still modpackId. " +
+                    "Leave blank to just show a generic title.")
+            .define("modpackDisplayName", "");
+
     public static final ModConfigSpec.IntValue LEADERBOARD_REFRESH_SECONDS = BUILDER
             .comment("Minimum time between re-fetching the leaderboard from the worker. Clients ask this " +
                     "server for the leaderboard on demand (opening the scoreboard dummy's screen); this " +

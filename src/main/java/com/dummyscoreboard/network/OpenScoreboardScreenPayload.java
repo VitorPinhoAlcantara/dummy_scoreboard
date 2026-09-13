@@ -19,7 +19,8 @@ public record OpenScoreboardScreenPayload(
         int dummyEntityId,
         List<LeaderboardEntry> localEntries,
         List<LeaderboardEntry> globalEntries,
-        boolean globalAvailable
+        boolean globalAvailable,
+        String modpackDisplayName
 ) implements CustomPacketPayload {
 
     public static final Type<OpenScoreboardScreenPayload> TYPE =
@@ -30,6 +31,7 @@ public record OpenScoreboardScreenPayload(
             LeaderboardEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), OpenScoreboardScreenPayload::localEntries,
             LeaderboardEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), OpenScoreboardScreenPayload::globalEntries,
             ByteBufCodecs.BOOL, OpenScoreboardScreenPayload::globalAvailable,
+            ByteBufCodecs.STRING_UTF8, OpenScoreboardScreenPayload::modpackDisplayName,
             OpenScoreboardScreenPayload::new
     );
 

@@ -1,12 +1,14 @@
 package com.dummyscoreboard.client;
 
 import com.dummyscoreboard.rank.LeaderboardEntry;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -28,17 +30,19 @@ public class ScoreboardScreen extends Screen {
     private final List<LeaderboardEntry> localEntries;
     private final List<LeaderboardEntry> globalEntries;
     private final boolean globalAvailable;
+    private final String modpackDisplayName;
     private final List<AbstractWidget> contentWidgets = new ArrayList<>();
 
     private boolean showingGlobal;
     private Button toggleButton;
 
     public ScoreboardScreen(List<LeaderboardEntry> localEntries, List<LeaderboardEntry> globalEntries,
-                             boolean globalAvailable) {
+                             boolean globalAvailable, String modpackDisplayName) {
         super(Component.translatable("gui.dummyscoreboard.title"));
         this.localEntries = localEntries;
         this.globalEntries = globalEntries;
         this.globalAvailable = globalAvailable;
+        this.modpackDisplayName = modpackDisplayName;
         this.showingGlobal = globalAvailable;
     }
 
@@ -74,8 +78,7 @@ public class ScoreboardScreen extends Screen {
         this.contentWidgets.clear();
 
         List<LeaderboardEntry> entries = this.showingGlobal ? this.globalEntries : this.localEntries;
-        Component title = Component.translatable(this.showingGlobal
-                ? "gui.dummyscoreboard.title.global" : "gui.dummyscoreboard.title.local");
+        Component title = this.showingGlobal ? this.globalTitle() : Component.translatable("gui.dummyscoreboard.title.local");
         this.contentWidgets.add(this.addCenteredLine(title, 16));
 
         if (entries.isEmpty()) {
@@ -83,11 +86,32 @@ public class ScoreboardScreen extends Screen {
         } else {
             for (int i = 0; i < entries.size(); i++) {
                 LeaderboardEntry entry = entries.get(i);
+                MutableComponent name = Component.literal(entry.playerName());
+                ChatFormatting rankColor = rankColor(i);
+                if (rankColor != null) {
+                    name = name.withStyle(rankColor);
+                }
                 Component line = Component.translatable("gui.dummyscoreboard.entry",
-                        i + 1, entry.playerName(), DAMAGE_FORMAT.format(entry.damage()));
+                        i + 1, name, DAMAGE_FORMAT.format(entry.damage()));
                 this.contentWidgets.add(this.addCenteredLine(line, LIST_TOP + i * ROW_HEIGHT));
             }
         }
+    }
+
+    private Component globalTitle() {
+        if (this.modpackDisplayName.isBlank()) {
+            return Component.translatable("gui.dummyscoreboard.title.global");
+        }
+        return Component.translatable("gui.dummyscoreboard.title.global.named", this.modpackDisplayName);
+    }
+
+    // #1's name is green, #2 and #3 are yellow, everyone else uses the default text color.
+    private static ChatFormatting rankColor(int index) {
+        return switch (index) {
+            case 0 -> ChatFormatting.GREEN;
+            case 1, 2 -> ChatFormatting.YELLOW;
+            default -> null;
+        };
     }
 
     private AbstractWidget addCenteredLine(Component text, int y) {

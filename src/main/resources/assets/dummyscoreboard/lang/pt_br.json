@@ -8,6 +8,7 @@
 
   "gui.dummyscoreboard.title": "Ranking do Maior Hit",
   "gui.dummyscoreboard.title.global": "Ranking Global",
+  "gui.dummyscoreboard.title.global.named": "Ranking Global - %s",
   "gui.dummyscoreboard.title.local": "Ranking Local (deste servidor)",
   "gui.dummyscoreboard.mode.global": "Modo: Global",
   "gui.dummyscoreboard.mode.local": "Modo: Local",
@@ -24,6 +25,8 @@
   "dummyscoreboard.configuration.section.dummyscoreboard.common.toml.title": "Ranking",
   "dummyscoreboard.configuration.modpackId": "ID do Modpack",
   "dummyscoreboard.configuration.modpackId.tooltip": "Identifica o modpack deste servidor pro worker do ranking. Todo servidor que compartilha o mesmo ranking precisa usar o mesmo valor. Deixe em branco para desativar o envio.",
+  "dummyscoreboard.configuration.modpackDisplayName": "Nome de exibição do modpack",
+  "dummyscoreboard.configuration.modpackDisplayName.tooltip": "Nome amigável mostrado no título do ranking global (ex: \"ATM 11\"). Puramente visual - deixe em branco pra mostrar só o título genérico.",
   "dummyscoreboard.configuration.leaderboardRefreshSeconds": "Intervalo de atualização do ranking (segundos)",
   "dummyscoreboard.configuration.leaderboardRefreshSeconds.tooltip": "Tempo mínimo entre o servidor checar o worker de novo por atualizações do ranking.",
   "dummyscoreboard.configuration.recordDebounceSeconds": "Espera do recorde (segundos)",

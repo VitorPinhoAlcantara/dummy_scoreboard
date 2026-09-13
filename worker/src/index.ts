@@ -19,6 +19,10 @@ export interface Env {
     // locally or `wrangler secret put SUBMIT_API_KEY` in production. Left unset, /submit is open -
     // fine for local testing, not for a real deployment.
     SUBMIT_API_KEY?: string;
+    // Per-IP request caps (see wrangler.jsonc) - protects the daily Workers/D1 free-tier budget
+    // from someone hitting the endpoints directly, not meant to affect normal mod traffic.
+    RATE_LIMITER_GET: RateLimit;
+    RATE_LIMITER_SUBMIT: RateLimit;
 }
 
 interface LeaderboardRow {
@@ -47,12 +51,19 @@ export default {
 
         const url = new URL(request.url);
         const leaderboardMatch = url.pathname.match(/^\/leaderboard\/([^/]+)$/);
+        const ip = request.headers.get("CF-Connecting-IP") ?? "unknown";
 
         if (request.method === "GET" && leaderboardMatch) {
+            if (!(await env.RATE_LIMITER_GET.limit({ key: ip })).success) {
+                return json({ error: "rate limited, try again shortly" }, 429);
+            }
             return handleGetLeaderboard(env, decodeURIComponent(leaderboardMatch[1]));
         }
 
         if (request.method === "POST" && url.pathname === "/submit") {
+            if (!(await env.RATE_LIMITER_SUBMIT.limit({ key: ip })).success) {
+                return json({ error: "rate limited, try again shortly" }, 429);
+            }
             return handleSubmit(request, env);
         }
 
@@ -84,6 +95,48 @@ async function handleGetLeaderboard(env: Env, modpackId: string): Promise<Respon
     return json(results ?? []);
 }
 
+interface SnapshotAttribute {
+    id?: string;
+    base?: number;
+}
+
+// Mirrors the vanilla default base value for a player - see AttackIntegrity.java on the mod side
+// for the full reasoning. Kept in sync by hand; if that file's map changes, update this one too.
+const EXPECTED_ATTRIBUTE_BASE: Record<string, number> = {
+    "minecraft:attack_damage": 1,
+    "minecraft:attack_speed": 4,
+    "minecraft:max_health": 20,
+    "minecraft:armor": 0,
+    "minecraft:armor_toughness": 0,
+    "minecraft:knockback_resistance": 0,
+    "minecraft:luck": 0,
+};
+const ATTRIBUTE_EPSILON = 1e-4;
+
+/**
+ * Independent re-check of the same signal the mod itself already looks for before ever offering a
+ * candidate - this exists so a modified client (or a request crafted by hand against this endpoint
+ * directly) can't just skip the Java-side check. Mods layer their bonuses on as modifiers and never
+ * touch base, so a base drifting from vanilla's own default is a tamper signal, not a false
+ * positive waiting to happen.
+ */
+function hasTamperedAttributes(snapshot: any): boolean {
+    const attributes = snapshot?.attributes;
+    if (!Array.isArray(attributes)) {
+        return false;
+    }
+    for (const attribute of attributes as SnapshotAttribute[]) {
+        if (typeof attribute?.id !== "string" || typeof attribute?.base !== "number") {
+            continue;
+        }
+        const expected = EXPECTED_ATTRIBUTE_BASE[attribute.id];
+        if (expected !== undefined && Math.abs(attribute.base - expected) > ATTRIBUTE_EPSILON) {
+            return true;
+        }
+    }
+    return false;
+}
+
 async function handleSubmit(request: Request, env: Env): Promise<Response> {
     if (env.SUBMIT_API_KEY && request.headers.get("X-Api-Key") !== env.SUBMIT_API_KEY) {
         return json({ error: "unauthorized" }, 401);
@@ -109,6 +162,10 @@ async function handleSubmit(request: Request, env: Env): Promise<Response> {
         typeof damage !== "number" || !(damage > 0)
     ) {
         return json({ error: "invalid payload" }, 400);
+    }
+
+    if (hasTamperedAttributes(snapshot)) {
+        return json({ accepted: false, reason: "attribute tampering detected" });
     }
 
     if (!(await isRegisteredModpack(env, modpackId))) {

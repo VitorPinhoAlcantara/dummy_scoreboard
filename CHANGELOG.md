@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1] - 2026-09-13
+
+### Adicionado
+- Cores no rank: nome do #1 em verde, #2 e #3 em amarelo (local e global).
+- Título do ranking global agora mostra o nome do modpack quando `modpackDisplayName` está
+  configurado (ex: "Global Leaderboard - ATM 11"). Puramente cosmético, novo config opcional.
+- Limite de requisições por IP no worker (30/min em `/leaderboard`, 10/min em `/submit`) usando o
+  binding nativo de Rate Limiting da Cloudflare - gratuito em qualquer plano, protege contra
+  alguém martelando os endpoints diretamente.
+- Detecção de adulteração de atributos de combate (ex: `/attribute ... base set`): um hit só conta
+  pro ranking se os atributos de combate do jogador (dano, velocidade de ataque, vida máxima,
+  armadura, resistência a knockback, sorte) baterem com os valores padrão do vanilla. Mods legítimos
+  sempre aplicam seus bônus como modifiers, nunca alterando a base diretamente - então uma base fora
+  do padrão é sinal forte de comando/exploit, não falso positivo. Checado tanto no mod (bloqueia o
+  hit por completo, local e global) quanto de forma independente no worker (rejeita a submissão
+  mesmo que alguém tente pular a checagem do mod com um client modificado ou POST direto).
+- Jogadores em modo Creative não têm mais hits contabilizados em nenhum ranking.
+
 ## [1.0.1] - 2026-09-12
 
 ### Corrigido

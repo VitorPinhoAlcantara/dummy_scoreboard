@@ -8,7 +8,7 @@ public final class ClientPayloadHandler {
 
     public static void handleOpenScoreboardScreen(OpenScoreboardScreenPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> Minecraft.getInstance().setScreen(new ScoreboardScreen(
-                payload.localEntries(), payload.globalEntries(), payload.globalAvailable())));
+                payload.localEntries(), payload.globalEntries(), payload.globalAvailable(), payload.modpackDisplayName())));
     }
 
     private ClientPayloadHandler() {
