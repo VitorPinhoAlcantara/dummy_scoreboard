@@ -1,6 +1,7 @@
 package com.dummyscoreboard.rank;
 
 import com.dummyscoreboard.snapshot.PlayerCombatSnapshot;
+import net.minecraft.core.HolderLookup;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,7 +34,7 @@ public final class LocalStubLeaderboardService implements LeaderboardService {
     }
 
     @Override
-    public synchronized void submitCandidate(String modpackId, PlayerCombatSnapshot snapshot) {
+    public synchronized void submitCandidate(String modpackId, PlayerCombatSnapshot snapshot, HolderLookup.Provider registries) {
         List<PlayerCombatSnapshot> current = new ArrayList<>(this.byModpack.getOrDefault(modpackId, List.of()));
 
         UUID player = snapshot.playerUuid();

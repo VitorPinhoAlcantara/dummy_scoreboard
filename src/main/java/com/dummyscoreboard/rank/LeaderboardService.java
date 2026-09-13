@@ -1,6 +1,7 @@
 package com.dummyscoreboard.rank;
 
 import com.dummyscoreboard.snapshot.PlayerCombatSnapshot;
+import net.minecraft.core.HolderLookup;
 
 import java.util.List;
 
@@ -21,6 +22,9 @@ public interface LeaderboardService {
      * Submits a candidate record. Implementations are expected to only keep it if it actually beats
      * the current top 10 (or the submitting player's own existing entry) - callers already checked
      * this against their local cache, but the service is the source of truth.
+     *
+     * @param registries registry access needed to encode the snapshot's item stacks (enchantments,
+     *                    trims, etc. are registry-backed and can't be encoded with a bare JsonOps).
      */
-    void submitCandidate(String modpackId, PlayerCombatSnapshot snapshot);
+    void submitCandidate(String modpackId, PlayerCombatSnapshot snapshot, HolderLookup.Provider registries);
 }

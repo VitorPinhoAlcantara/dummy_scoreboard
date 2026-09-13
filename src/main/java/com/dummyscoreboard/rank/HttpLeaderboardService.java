@@ -6,7 +6,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.RegistryOps;
 
 import java.io.IOException;
 import java.net.URI;
@@ -69,8 +72,13 @@ public class HttpLeaderboardService implements LeaderboardService {
     }
 
     @Override
-    public void submitCandidate(String modpackId, PlayerCombatSnapshot snapshot) {
-        DataResult<JsonElement> encoded = PlayerCombatSnapshot.CODEC.encodeStart(JsonOps.INSTANCE, snapshot);
+    public void submitCandidate(String modpackId, PlayerCombatSnapshot snapshot, HolderLookup.Provider registries) {
+        // Plain JsonOps can't resolve registry-backed data on the captured item stacks (enchantments,
+        // trims, etc. are stored as holder references, not inline values) - encoding one without a
+        // registry-aware ops fails with "Can't access registry ResourceKey[...]" and silently drops
+        // the whole submission.
+        DynamicOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registries);
+        DataResult<JsonElement> encoded = PlayerCombatSnapshot.CODEC.encodeStart(ops, snapshot);
         encoded.resultOrPartial(error -> DummyScoreboardMod.LOGGER.error("Failed to encode snapshot: {}", error))
                 .ifPresent(snapshotJson -> this.postSubmit(modpackId, snapshotJson));
     }

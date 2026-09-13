@@ -3,6 +3,7 @@ package com.dummyscoreboard.rank;
 import com.dummyscoreboard.config.CommonConfig;
 import com.dummyscoreboard.persistence.LeaderboardPersistence;
 import com.dummyscoreboard.snapshot.PlayerCombatSnapshot;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
@@ -114,13 +115,13 @@ public final class LeaderboardCache {
      *
      * @return the confirmed 1-based rank, or -1 if the record no longer qualifies.
      */
-    public static synchronized int confirmGlobalCandidate(PlayerCombatSnapshot snapshot) {
+    public static synchronized int confirmGlobalCandidate(PlayerCombatSnapshot snapshot, HolderLookup.Provider registries) {
         String modpackId = CommonConfig.MODPACK_ID.get();
         globalEntries = service.fetchTop10(modpackId);
         if (!qualifiesGlobal(snapshot.playerName(), snapshot.damage())) {
             return -1;
         }
-        service.submitCandidate(modpackId, snapshot);
+        service.submitCandidate(modpackId, snapshot, registries);
         globalEntries = service.fetchTop10(modpackId);
         LeaderboardPersistence.save();
         for (int i = 0; i < globalEntries.size(); i++) {

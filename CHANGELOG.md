@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.1] - 2026-09-12
+
+### Corrigido
+- Submissão de recorde para o ranking global falhava silenciosamente sempre que o item capturado
+  no snapshot de auditoria (arma, armadura, etc.) tinha encantamento, brasão ou outro dado
+  vinculado a registry. O motivo: o snapshot era codificado com `JsonOps` puro, que não tem acesso
+  aos registries do jogo - o encode falhava (`Can't access registry ResourceKey[...]`) e o mod
+  tratava isso como se o jogador simplesmente não tivesse batido o recorde, mostrando a mensagem
+  genérica "o ranking foi atualizado e seu recorde não entrou :(", sem indicar que era um erro.
+  Corrigido usando `RegistryOps` (que carrega o acesso aos registries do servidor) tanto no envio
+  pro worker quanto na persistência local em disco.
+
 ## [1.0] - 2026-09-12
 
 Primeira release de teste. Ainda em fase experimental - use em servidores de teste antes de

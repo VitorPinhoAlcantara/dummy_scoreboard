@@ -8,7 +8,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 
@@ -31,8 +34,10 @@ public final class LeaderboardPersistence {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static Path filePath;
+    private static HolderLookup.Provider registries;
 
     public static void bind(MinecraftServer server) {
+        registries = server.registryAccess();
         Path dir = server.getWorldPath(LevelResource.ROOT).resolve("dummyscoreboard");
         try {
             Files.createDirectories(dir);
@@ -48,6 +53,7 @@ public final class LeaderboardPersistence {
     public static void unbind() {
         save();
         filePath = null;
+        registries = null;
     }
 
     public static synchronized void save() {
@@ -58,7 +64,8 @@ public final class LeaderboardPersistence {
                 LeaderboardCache.service() instanceof LocalStubLeaderboardService stub ? stub.exportState() : Map.of();
         PersistedLeaderboardState state = new PersistedLeaderboardState(LeaderboardCache.localEntries(), globalState);
 
-        DataResult<JsonElement> result = PersistedLeaderboardState.CODEC.encodeStart(JsonOps.INSTANCE, state);
+        DynamicOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registries);
+        DataResult<JsonElement> result = PersistedLeaderboardState.CODEC.encodeStart(ops, state);
         result.resultOrPartial(error -> DummyScoreboardMod.LOGGER.error("Failed to encode leaderboard data: {}", error))
                 .ifPresent(json -> {
                     try (Writer writer = Files.newBufferedWriter(filePath)) {
@@ -75,7 +82,8 @@ public final class LeaderboardPersistence {
         }
         try (Reader reader = Files.newBufferedReader(filePath)) {
             JsonElement json = JsonParser.parseReader(reader);
-            PersistedLeaderboardState.CODEC.parse(JsonOps.INSTANCE, json)
+            DynamicOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registries);
+            PersistedLeaderboardState.CODEC.parse(ops, json)
                     .resultOrPartial(error -> DummyScoreboardMod.LOGGER.error("Failed to decode leaderboard data: {}", error))
                     .ifPresent(state -> {
                         LeaderboardCache.restoreLocalEntries(state.local());

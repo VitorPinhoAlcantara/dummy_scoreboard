@@ -33,7 +33,7 @@ public final class ServerTickEvents {
     }
 
     private static void confirmCandidate(MinecraftServer server, PlayerCombatSnapshot snapshot) {
-        int rank = LeaderboardCache.confirmGlobalCandidate(snapshot);
+        int rank = LeaderboardCache.confirmGlobalCandidate(snapshot, server.registryAccess());
         ServerPlayer player = server.getPlayerList().getPlayer(snapshot.playerUuid());
         if (player == null) {
             return;
