@@ -15,10 +15,6 @@
 
 export interface Env {
     DB: D1Database;
-    // Optional: if set, /submit requires a matching "X-Api-Key" header. Set via `.dev.vars`
-    // locally or `wrangler secret put SUBMIT_API_KEY` in production. Left unset, /submit is open -
-    // fine for local testing, not for a real deployment.
-    SUBMIT_API_KEY?: string;
     // Per-IP request caps (see wrangler.jsonc) - protects the daily Workers/D1 free-tier budget
     // from someone hitting the endpoints directly, not meant to affect normal mod traffic.
     RATE_LIMITER_GET: RateLimit;
@@ -71,22 +67,25 @@ export default {
     },
 } satisfies ExportedHandler<Env>;
 
+interface ModpackRow {
+    api_key: string | null;
+}
+
 /**
  * Modpack ids are pre-registered by hand (see schema.sql) specifically so nobody can point their
  * own server at, say, "atm11" and pollute or squat on a real modpack's board. An id with no row
  * here is treated exactly like "nothing to see" - no error, no distinguishing response - rather
  * than implicitly creating a leaderboard for it.
  */
-async function isRegisteredModpack(env: Env, modpackId: string): Promise<boolean> {
-    const row = await env.DB.prepare("SELECT 1 FROM modpacks WHERE id = ?1").bind(modpackId).first();
-    return row !== null;
+async function getModpack(env: Env, modpackId: string): Promise<ModpackRow | null> {
+    return env.DB.prepare("SELECT api_key FROM modpacks WHERE id = ?1").bind(modpackId).first<ModpackRow>();
 }
 
 async function handleGetLeaderboard(env: Env, modpackId: string): Promise<Response> {
     if (!modpackId) {
         return json({ error: "missing modpack id" }, 400);
     }
-    if (!(await isRegisteredModpack(env, modpackId))) {
+    if (!(await getModpack(env, modpackId))) {
         return json([]);
     }
     const { results } = await env.DB.prepare(
@@ -138,10 +137,6 @@ function hasTamperedAttributes(snapshot: any): boolean {
 }
 
 async function handleSubmit(request: Request, env: Env): Promise<Response> {
-    if (env.SUBMIT_API_KEY && request.headers.get("X-Api-Key") !== env.SUBMIT_API_KEY) {
-        return json({ error: "unauthorized" }, 401);
-    }
-
     let body: any;
     try {
         body = await request.json();
@@ -168,8 +163,12 @@ async function handleSubmit(request: Request, env: Env): Promise<Response> {
         return json({ accepted: false, reason: "attribute tampering detected" });
     }
 
-    if (!(await isRegisteredModpack(env, modpackId))) {
+    const modpack = await getModpack(env, modpackId);
+    if (!modpack) {
         return json({ accepted: false, reason: "unknown modpack" });
+    }
+    if (modpack.api_key && request.headers.get("X-Api-Key") !== modpack.api_key) {
+        return json({ error: "unauthorized" }, 401);
     }
 
     const existing = await env.DB.prepare(

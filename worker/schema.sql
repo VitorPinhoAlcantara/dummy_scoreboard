@@ -6,6 +6,11 @@
 CREATE TABLE IF NOT EXISTS modpacks (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
+    -- Per-modpack submit secret (sent by the mod as the X-Api-Key header), NOT a single shared
+    -- worker-wide secret - so a leaked key only lets someone mess with that one modpack's board,
+    -- not every registered modpack. NULL means /submit is open for that modpack (fine for local
+    -- testing, not for anything real).
+    api_key TEXT,
     -- Milliseconds since epoch, same unit as leaderboard.created_at (which the worker sets via
     -- Date.now()) - filled in automatically so the INSERT only needs to pass id and name.
     created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000)
