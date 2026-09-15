@@ -11,6 +11,10 @@ CREATE TABLE IF NOT EXISTS modpacks (
     -- not every registered modpack. NULL means /submit is open for that modpack (fine for local
     -- testing, not for anything real).
     api_key TEXT,
+    -- 0/1. When set, the weekly cron trigger (see src/index.ts's `scheduled` handler) wipes this
+    -- modpack's leaderboard every week - opt-in per modpack, off by default, so a modpack that
+    -- wants an all-time permanent record (like a named modpack such as ATM 11) isn't affected.
+    auto_reset_weekly INTEGER NOT NULL DEFAULT 0,
     -- Milliseconds since epoch, same unit as leaderboard.created_at (which the worker sets via
     -- Date.now()) - filled in automatically so the INSERT only needs to pass id and name.
     created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000)

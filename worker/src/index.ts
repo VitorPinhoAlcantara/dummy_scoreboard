@@ -65,6 +65,15 @@ export default {
 
         return json({ error: "not found" }, 404);
     },
+
+    // Weekly cron (see wrangler.jsonc's `triggers.crons`). Wipes the leaderboard of every modpack
+    // that opted into a fresh start each week (auto_reset_weekly = 1) - off by default, so a named
+    // modpack's board stays a permanent all-time record unless its owner turns this on for it.
+    async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+        await env.DB.prepare(
+            `DELETE FROM leaderboard WHERE modpack_id IN (SELECT id FROM modpacks WHERE auto_reset_weekly = 1)`
+        ).run();
+    },
 } satisfies ExportedHandler<Env>;
 
 interface ModpackRow {

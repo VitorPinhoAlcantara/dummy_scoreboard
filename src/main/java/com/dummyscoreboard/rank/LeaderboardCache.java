@@ -44,7 +44,7 @@ public final class LeaderboardCache {
     }
 
     public static boolean globalAvailable() {
-        return !CommonConfig.MODPACK_ID.get().isBlank();
+        return !CommonConfig.effectiveModpackId().isBlank();
     }
 
     public static List<LeaderboardEntry> localEntries() {
@@ -73,7 +73,7 @@ public final class LeaderboardCache {
             return;
         }
         lastFetchGameTime = now;
-        globalEntries = service.fetchTop10(CommonConfig.MODPACK_ID.get());
+        globalEntries = service.fetchTop10(CommonConfig.effectiveModpackId());
     }
 
     public static boolean qualifiesLocal(String playerName, float damage) {
@@ -116,7 +116,7 @@ public final class LeaderboardCache {
      * @return the confirmed 1-based rank, or -1 if the record no longer qualifies.
      */
     public static synchronized int confirmGlobalCandidate(PlayerCombatSnapshot snapshot, HolderLookup.Provider registries) {
-        String modpackId = CommonConfig.MODPACK_ID.get();
+        String modpackId = CommonConfig.effectiveModpackId();
         globalEntries = service.fetchTop10(modpackId);
         if (!qualifiesGlobal(snapshot.playerName(), snapshot.damage())) {
             return -1;

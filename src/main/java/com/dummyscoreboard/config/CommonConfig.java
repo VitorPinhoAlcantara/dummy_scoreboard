@@ -4,6 +4,20 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class CommonConfig {
 
+    // Baked into the jar rather than exposed as a config field, so a regular server admin can't
+    // casually read or repoint these from the visible, documented settings file - only someone who
+    // decompiles the jar could (this is obfuscation, not real secrecy; see the per-modpack api_key
+    // design on the worker side for what actually limits the damage from that). Used only as the
+    // fallback when the admin hasn't set up their own dedicated modpack: every server that installs
+    // this mod without touching the config still gets to participate in a shared default
+    // leaderboard instead of being local-only, while modpacks like ATM 11 get their own private one
+    // by simply setting modpackId below.
+    private static final String DEFAULT_MODPACK_ID = "c0aa92ac-5a85-4f63-bf67-6c56e8352b77";
+    private static final String DEFAULT_MODPACK_API_KEY = "9da21d9679c774aa0ccc0a649310e52718a344bd04f33f3bb7c097f5e1ae1c29";
+    // Not a secret (it's a public HTTPS endpoint visible in every request anyway) - baked in purely
+    // so the default modpack works without the admin having to type this in themselves.
+    private static final String DEFAULT_WORKER_BASE_URL = "https://dummyscoreboard-worker.vitoralcantara1722.workers.dev";
+
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     // Free-form string rather than a strictly-validated UUID: the modpack id is just an opaque key
@@ -11,8 +25,8 @@ public final class CommonConfig {
     // a server admin picking something readable (a real UUID still works fine as a value).
     public static final ModConfigSpec.ConfigValue<String> MODPACK_ID = BUILDER
             .comment("Identifies this server's modpack to the leaderboard worker. Every server meant to " +
-                    "share the same leaderboard must use the same value here. Leave blank to disable " +
-                    "leaderboard reporting entirely.")
+                    "share the same leaderboard must use the same value here. Leave blank to use the " +
+                    "mod's built-in default shared leaderboard instead of a dedicated one.")
             .define("modpackId", "");
 
     // Purely cosmetic (shown in the global board's title) - the worker doesn't return this, so the
@@ -38,16 +52,35 @@ public final class CommonConfig {
 
     public static final ModConfigSpec.ConfigValue<String> WORKER_BASE_URL = BUILDER
             .comment("Base URL of the leaderboard worker (e.g. http://127.0.0.1:8787 for a local " +
-                    "`wrangler dev`, or the real deployed worker's URL later). Leave blank to keep using " +
-                    "the built-in in-memory/local-file stub instead of a real HTTP backend.")
+                    "`wrangler dev` you're running yourself). Leave blank to use the mod's built-in worker.")
             .define("workerBaseUrl", "");
 
     public static final ModConfigSpec.ConfigValue<String> WORKER_API_KEY = BUILDER
-            .comment("Sent as the X-Api-Key header on every submission, if set. Must match the worker's " +
-                    "SUBMIT_API_KEY. Leave blank if the worker doesn't require one (e.g. local dev).")
+            .comment("Sent as the X-Api-Key header on every submission, if set. Must match modpackId's " +
+                    "own key on the worker. Leave blank to use the mod's built-in default modpack's key.")
             .define("workerApiKey", "");
 
     public static final ModConfigSpec SPEC = BUILDER.build();
+
+    /**
+     * {@link #MODPACK_ID}, falling back to the mod's own default modpack when the admin hasn't set
+     * one. Always non-blank - unlike a blank {@link #MODPACK_DISPLAY_NAME}, there's no "no global
+     * board at all" mode any more, only "the shared default one" vs. "your own dedicated one".
+     */
+    public static String effectiveModpackId() {
+        String configured = MODPACK_ID.get();
+        return configured.isBlank() ? DEFAULT_MODPACK_ID : configured;
+    }
+
+    public static String effectiveWorkerBaseUrl() {
+        String configured = WORKER_BASE_URL.get();
+        return configured.isBlank() ? DEFAULT_WORKER_BASE_URL : configured;
+    }
+
+    public static String effectiveWorkerApiKey() {
+        String configured = WORKER_API_KEY.get();
+        return configured.isBlank() ? DEFAULT_MODPACK_API_KEY : configured;
+    }
 
     private CommonConfig() {
     }

@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased]
+
+### Adicionado
+- Receita de craft pro Scoreboard Dummy Spawner: um Training Dummy Spawner + 1 diamante (sem
+  formato fixo, tanto faz a posição na bancada).
+- Modpack padrão embutido no mod: se `modpackId`/`workerBaseUrl`/`workerApiKey` ficarem em branco,
+  o mod agora usa um modpack e um worker padrão já embutidos no jar (não expostos no config), em
+  vez de cair pro modo local-only. Modpacks com config próprio (como o ATM 11) continuam com seu
+  próprio ranking dedicado normalmente. O nome de exibição desse modpack padrão fica vazio de
+  propósito, então nenhum nome aparece no título do ranking global nesse caso.
+- Reset semanal automático (opt-in por modpack) no worker: toda semana, domingo 00:00 UTC, um cron
+  trigger zera o ranking de qualquer modpack marcado com `auto_reset_weekly`. Desativado por padrão
+  para modpacks com nome próprio (ex: ATM 11) - ativado só no modpack padrão embutido.
+
+### Notas
+- Como consequência do modpack padrão, deixar o config em branco não significa mais "sem ranking
+  global" - significa "participa do ranking padrão compartilhado". Não existe mais um jeito de só
+  usar o ranking local sem reportar nada pra nenhum worker.
+
 ## [1.1] - 2026-09-13
 
 ### Adicionado

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "trainingdummy:dummy_spawner",
+    "minecraft:diamond"
+  ],
+  "result": {
+    "count": 1,
+    "id": "dummyscoreboard:scoreboard_dummy_spawner"
+  }
+}
