@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.2] - 2026-09-15
 
 ### Adicionado
 - Receita de craft pro Scoreboard Dummy Spawner: um Training Dummy Spawner + 1 diamante (sem
