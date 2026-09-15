@@ -13,6 +13,15 @@
 - Reset semanal automático (opt-in por modpack) no worker: toda semana, domingo 00:00 UTC, um cron
   trigger zera o ranking de qualquer modpack marcado com `auto_reset_weekly`. Desativado por padrão
   para modpacks com nome próprio (ex: ATM 11) - ativado só no modpack padrão embutido.
+- A tela do ranking agora reabre sempre na última aba (Local/Global) que o jogador deixou aberta,
+  em vez de sempre voltar pro Global. Só um comportamento fixo em memória - não é uma config, então
+  não aparece em nenhuma tela de opções.
+
+### Corrigido
+- Um problema de comunicação com o worker (rede fora do ar, chave errada, resposta inesperada) era
+  mostrado com a mesma mensagem genérica de "seu recorde não entrou", como se o jogador tivesse
+  sido superado por outro. Agora esses casos mostram uma mensagem própria informando que houve um
+  problema de comunicação, em vez de parecer uma disputa de rank perdida.
 
 ### Notas
 - Como consequência do modpack padrão, deixar o config em branco não significa mais "sem ranking

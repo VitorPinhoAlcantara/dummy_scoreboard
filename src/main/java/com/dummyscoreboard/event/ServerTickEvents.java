@@ -40,6 +40,8 @@ public final class ServerTickEvents {
         }
         if (rank > 0) {
             player.sendSystemMessage(Component.translatable("dummyscoreboard.record.confirmed", rank));
+        } else if (rank == LeaderboardCache.COMMUNICATION_ERROR) {
+            player.sendSystemMessage(Component.translatable("dummyscoreboard.record.communication_error"));
         } else {
             player.sendSystemMessage(Component.translatable("dummyscoreboard.record.rejected"));
         }

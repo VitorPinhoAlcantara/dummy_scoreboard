@@ -9,6 +9,7 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Server-owned leaderboard state, split into two independent boards:
@@ -27,6 +28,13 @@ import java.util.List;
 public final class LeaderboardCache {
 
     private static final int TOP_N = 10;
+
+    /**
+     * Sentinel {@link #confirmGlobalCandidate} rank meaning the server couldn't be reached (or gave
+     * a bad response) - distinct from a legitimate -1 "someone else beat you to it", so the player
+     * (and the server console) can tell a connectivity problem apart from an actual rejection.
+     */
+    public static final int COMMUNICATION_ERROR = Integer.MIN_VALUE;
 
     private static LeaderboardService service = new LocalStubLeaderboardService();
 
@@ -73,7 +81,9 @@ public final class LeaderboardCache {
             return;
         }
         lastFetchGameTime = now;
-        globalEntries = service.fetchTop10(CommonConfig.effectiveModpackId());
+        // A failed refresh just keeps showing the last known board rather than blanking it out -
+        // a transient network hiccup shouldn't make the leaderboard look empty.
+        service.fetchTop10(CommonConfig.effectiveModpackId()).ifPresent(entries -> globalEntries = entries);
     }
 
     public static boolean qualifiesLocal(String playerName, float damage) {
@@ -113,16 +123,30 @@ public final class LeaderboardCache {
      * qualification against it (someone else, or another server, may have beaten this in the
      * meantime) before actually submitting.
      *
-     * @return the confirmed 1-based rank, or -1 if the record no longer qualifies.
+     * @return the confirmed 1-based rank, -1 if the record no longer qualifies, or
+     *         {@link #COMMUNICATION_ERROR} if the worker couldn't be reached at any step.
      */
     public static synchronized int confirmGlobalCandidate(PlayerCombatSnapshot snapshot, HolderLookup.Provider registries) {
         String modpackId = CommonConfig.effectiveModpackId();
-        globalEntries = service.fetchTop10(modpackId);
+
+        Optional<List<LeaderboardEntry>> beforeSubmit = service.fetchTop10(modpackId);
+        if (beforeSubmit.isEmpty()) {
+            return COMMUNICATION_ERROR;
+        }
+        globalEntries = beforeSubmit.get();
         if (!qualifiesGlobal(snapshot.playerName(), snapshot.damage())) {
             return -1;
         }
-        service.submitCandidate(modpackId, snapshot, registries);
-        globalEntries = service.fetchTop10(modpackId);
+
+        if (!service.submitCandidate(modpackId, snapshot, registries)) {
+            return COMMUNICATION_ERROR;
+        }
+
+        Optional<List<LeaderboardEntry>> afterSubmit = service.fetchTop10(modpackId);
+        if (afterSubmit.isEmpty()) {
+            return COMMUNICATION_ERROR;
+        }
+        globalEntries = afterSubmit.get();
         LeaderboardPersistence.save();
         for (int i = 0; i < globalEntries.size(); i++) {
             if (globalEntries.get(i).playerName().equals(snapshot.playerName())) {

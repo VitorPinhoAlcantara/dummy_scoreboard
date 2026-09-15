@@ -20,6 +20,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Talks to the real worker (see /worker in this repo) over plain HTTP. Requests are made
@@ -45,7 +46,7 @@ public class HttpLeaderboardService implements LeaderboardService {
     }
 
     @Override
-    public List<LeaderboardEntry> fetchTop10(String modpackId) {
+    public Optional<List<LeaderboardEntry>> fetchTop10(String modpackId) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(this.baseUrl + "/leaderboard/" + URLEncoder.encode(modpackId, StandardCharsets.UTF_8)))
                 .timeout(REQUEST_TIMEOUT)
@@ -56,34 +57,34 @@ public class HttpLeaderboardService implements LeaderboardService {
             HttpResponse<String> response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
                 DummyScoreboardMod.LOGGER.error("Leaderboard fetch failed: HTTP {} - {}", response.statusCode(), response.body());
-                return List.of();
+                return Optional.empty();
             }
             JsonElement json = JsonParser.parseString(response.body());
             return LeaderboardEntry.CODEC.listOf().parse(JsonOps.INSTANCE, json)
-                    .resultOrPartial(error -> DummyScoreboardMod.LOGGER.error("Failed to decode leaderboard response: {}", error))
-                    .orElse(List.of());
+                    .resultOrPartial(error -> DummyScoreboardMod.LOGGER.error("Failed to decode leaderboard response: {}", error));
         } catch (IOException e) {
             DummyScoreboardMod.LOGGER.error("Leaderboard fetch failed", e);
-            return List.of();
+            return Optional.empty();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return List.of();
+            return Optional.empty();
         }
     }
 
     @Override
-    public void submitCandidate(String modpackId, PlayerCombatSnapshot snapshot, HolderLookup.Provider registries) {
+    public boolean submitCandidate(String modpackId, PlayerCombatSnapshot snapshot, HolderLookup.Provider registries) {
         // Plain JsonOps can't resolve registry-backed data on the captured item stacks (enchantments,
         // trims, etc. are stored as holder references, not inline values) - encoding one without a
         // registry-aware ops fails with "Can't access registry ResourceKey[...]" and silently drops
         // the whole submission.
         DynamicOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registries);
         DataResult<JsonElement> encoded = PlayerCombatSnapshot.CODEC.encodeStart(ops, snapshot);
-        encoded.resultOrPartial(error -> DummyScoreboardMod.LOGGER.error("Failed to encode snapshot: {}", error))
-                .ifPresent(snapshotJson -> this.postSubmit(modpackId, snapshotJson));
+        return encoded.resultOrPartial(error -> DummyScoreboardMod.LOGGER.error("Failed to encode snapshot: {}", error))
+                .map(snapshotJson -> this.postSubmit(modpackId, snapshotJson))
+                .orElse(false);
     }
 
-    private void postSubmit(String modpackId, JsonElement snapshotJson) {
+    private boolean postSubmit(String modpackId, JsonElement snapshotJson) {
         JsonObject body = new JsonObject();
         body.addProperty("modpack_id", modpackId);
         body.add("snapshot", snapshotJson);
@@ -101,11 +102,15 @@ public class HttpLeaderboardService implements LeaderboardService {
             HttpResponse<String> response = this.client.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
                 DummyScoreboardMod.LOGGER.error("Leaderboard submit failed: HTTP {} - {}", response.statusCode(), response.body());
+                return false;
             }
+            return true;
         } catch (IOException e) {
             DummyScoreboardMod.LOGGER.error("Leaderboard submit failed", e);
+            return false;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            return false;
         }
     }
 }

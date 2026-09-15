@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,10 +24,10 @@ public final class LocalStubLeaderboardService implements LeaderboardService {
     private final Map<String, List<PlayerCombatSnapshot>> byModpack = new ConcurrentHashMap<>();
 
     @Override
-    public List<LeaderboardEntry> fetchTop10(String modpackId) {
-        return this.byModpack.getOrDefault(modpackId, List.of()).stream()
+    public Optional<List<LeaderboardEntry>> fetchTop10(String modpackId) {
+        return Optional.of(this.byModpack.getOrDefault(modpackId, List.of()).stream()
                 .map(snapshot -> new LeaderboardEntry(snapshot.playerName(), snapshot.damage()))
-                .toList();
+                .toList());
     }
 
     public List<PlayerCombatSnapshot> fetchTop10Snapshots(String modpackId) {
@@ -34,7 +35,7 @@ public final class LocalStubLeaderboardService implements LeaderboardService {
     }
 
     @Override
-    public synchronized void submitCandidate(String modpackId, PlayerCombatSnapshot snapshot, HolderLookup.Provider registries) {
+    public synchronized boolean submitCandidate(String modpackId, PlayerCombatSnapshot snapshot, HolderLookup.Provider registries) {
         List<PlayerCombatSnapshot> current = new ArrayList<>(this.byModpack.getOrDefault(modpackId, List.of()));
 
         UUID player = snapshot.playerUuid();
@@ -43,13 +44,14 @@ public final class LocalStubLeaderboardService implements LeaderboardService {
                 .anyMatch(existing -> existing.playerUuid().equals(player) && existing.damage() > snapshot.damage());
         if (alreadyHasBetter) {
             this.byModpack.put(modpackId, current);
-            return;
+            return true;
         }
 
         current.add(snapshot);
         current.sort(Comparator.comparingDouble(PlayerCombatSnapshot::damage).reversed());
         List<PlayerCombatSnapshot> trimmed = current.size() > TOP_N ? current.subList(0, TOP_N) : current;
         this.byModpack.put(modpackId, List.copyOf(trimmed));
+        return true;
     }
 
     public Map<String, List<PlayerCombatSnapshot>> exportState() {

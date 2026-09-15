@@ -19,12 +19,13 @@
   "dummyscoreboard.record.achieved": "New record! You're now #%s on the leaderboard (pending confirmation).",
   "dummyscoreboard.record.confirmed": "Record confirmed! Sending to the server... You're #%s on the leaderboard.",
   "dummyscoreboard.record.rejected": "The leaderboard updated in the meantime and your record didn't make the cut :(",
+  "dummyscoreboard.record.communication_error": "Couldn't confirm your record - there was a problem communicating with the leaderboard server. Please try again later.",
 
   "dummyscoreboard.configuration.title": "Dummy Scoreboard - Config",
   "dummyscoreboard.configuration.section.dummyscoreboard.common.toml": "Leaderboard",
   "dummyscoreboard.configuration.section.dummyscoreboard.common.toml.title": "Leaderboard",
   "dummyscoreboard.configuration.modpackId": "Modpack ID",
-  "dummyscoreboard.configuration.modpackId.tooltip": "Identifies this server's modpack to the leaderboard worker. Every server sharing a leaderboard must use the same value. Leave blank to disable reporting.",
+  "dummyscoreboard.configuration.modpackId.tooltip": "Identifies this server's modpack to the leaderboard worker. Every server sharing a leaderboard must use the same value. Leave blank to use the mod's built-in default shared leaderboard.",
   "dummyscoreboard.configuration.modpackDisplayName": "Modpack display name",
   "dummyscoreboard.configuration.modpackDisplayName.tooltip": "Friendly name shown in the global leaderboard's title (e.g. \"ATM 11\"). Purely cosmetic - leave blank to just show a generic title.",
   "dummyscoreboard.configuration.leaderboardRefreshSeconds": "Leaderboard refresh interval (seconds)",
@@ -32,7 +33,7 @@
   "dummyscoreboard.configuration.recordDebounceSeconds": "Record debounce (seconds)",
   "dummyscoreboard.configuration.recordDebounceSeconds.tooltip": "How long to wait after a qualifying hit before submitting it, in case the same player beats it again shortly after.",
   "dummyscoreboard.configuration.workerBaseUrl": "Worker base URL",
-  "dummyscoreboard.configuration.workerBaseUrl.tooltip": "Base URL of the leaderboard worker (e.g. http://127.0.0.1:8787 for a local wrangler dev). Leave blank to use the built-in local stub instead of a real HTTP backend.",
+  "dummyscoreboard.configuration.workerBaseUrl.tooltip": "Base URL of the leaderboard worker (e.g. http://127.0.0.1:8787 for a local wrangler dev you're running yourself). Leave blank to use the mod's built-in worker.",
   "dummyscoreboard.configuration.workerApiKey": "Worker API key",
-  "dummyscoreboard.configuration.workerApiKey.tooltip": "Sent as the X-Api-Key header on every submission, if set. Must match the worker's SUBMIT_API_KEY."
+  "dummyscoreboard.configuration.workerApiKey.tooltip": "Sent as the X-Api-Key header on every submission, if set. Must match modpackId's own key on the worker. Leave blank to use the mod's built-in default modpack's key."
 }

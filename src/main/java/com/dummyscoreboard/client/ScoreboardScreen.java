@@ -27,6 +27,11 @@ public class ScoreboardScreen extends Screen {
     private static final int LIST_TOP = 40;
     private static final int WIDGET_WIDTH = 240;
 
+    // Not a config value on purpose - just a fixed default (global first time) that remembers the
+    // player's last choice for the rest of this client session. Static, so it outlives any single
+    // screen instance but resets on client restart same as any other purely in-memory UI state.
+    private static boolean lastViewedGlobal = true;
+
     private final List<LeaderboardEntry> localEntries;
     private final List<LeaderboardEntry> globalEntries;
     private final boolean globalAvailable;
@@ -43,7 +48,9 @@ public class ScoreboardScreen extends Screen {
         this.globalEntries = globalEntries;
         this.globalAvailable = globalAvailable;
         this.modpackDisplayName = modpackDisplayName;
-        this.showingGlobal = globalAvailable;
+        // Reopens on whichever board the player last had open; only forced to local if global
+        // genuinely isn't available at all (nothing to remember toward in that case).
+        this.showingGlobal = globalAvailable && lastViewedGlobal;
     }
 
     @Override
@@ -67,6 +74,7 @@ public class ScoreboardScreen extends Screen {
 
     private void toggleMode() {
         this.showingGlobal = !this.showingGlobal;
+        lastViewedGlobal = this.showingGlobal;
         this.toggleButton.setMessage(this.modeLabel());
         this.rebuildContent();
     }
