@@ -1,21 +1,13 @@
 # Changelog
 
-## [1.2] - 2026-09-15
+## [1.21.1-1.2] - 2026-09-15
 
-### Added
-- Crafting recipe for the Scoreboard Dummy Spawner: a Training Dummy Spawner + 1 diamond
-  (shapeless, position doesn't matter).
-- Built-in default modpack: if `modpackId`/`workerBaseUrl`/`workerApiKey` are left blank, the mod
-  now uses a default modpack and worker already baked into the jar (not exposed in the config)
-  instead of falling back to local-only mode. Modpacks with their own config (like ATM 11) keep
-  working exactly as before, with their own dedicated leaderboard. The default modpack's display
-  name is intentionally blank, so no name shows up in the global leaderboard's title in that case.
-
-### Fixed
-- A communication problem with the worker (network down, wrong key, unexpected response) was shown
-  with the same generic "your record didn't make the cut" message, as if the player had simply been
-  outranked. These cases now show their own message explaining there was a communication problem,
-  instead of looking like a lost rank race.
+Port of v1.2 (26.1.2 branch) to Minecraft 1.21.1, plus a few small fixes found along the way:
+a missing `modLoader`/`loaderVersion` pair in the mods.toml template (mandatory on this NeoForge
+version, unlike 26.1.2), the crafting recipe's ingredient format (this version wants `{"item": "id"}`
+objects, not bare id strings), and the Java toolchain (this version runs on Java 21, not 25). Also
+gives this branch its own default modpack on the worker, separate from the 26.1.2 branch's, so the
+two versions' default leaderboards don't share data.
 
 ## [1.1] - 2026-09-13
 
