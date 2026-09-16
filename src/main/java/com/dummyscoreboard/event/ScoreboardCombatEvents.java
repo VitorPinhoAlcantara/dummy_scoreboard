@@ -24,7 +24,7 @@ public final class ScoreboardCombatEvents {
         if (!(event.getSource().getEntity() instanceof ServerPlayer attacker)) {
             return;
         }
-        float amount = event.getInflictedDamage();
+        float amount = event.getNewDamage();
         if (amount <= 0.0F) {
             return;
         }
@@ -36,11 +36,11 @@ public final class ScoreboardCombatEvents {
         if (AttackIntegrity.hasTamperedBase(attacker)) {
             DummyScoreboardMod.LOGGER.warn("Ignoring dummy hit from {} for leaderboard purposes - a combat " +
                     "attribute's base value doesn't match vanilla defaults (possible /attribute tampering)",
-                    attacker.getGameProfile().name());
+                    attacker.getGameProfile().getName());
             return;
         }
 
-        String playerName = attacker.getGameProfile().name();
+        String playerName = attacker.getGameProfile().getName();
 
         if (LeaderboardCache.qualifiesLocal(playerName, amount)) {
             int localRank = LeaderboardCache.applyLocalUpdate(playerName, amount);

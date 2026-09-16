@@ -7,7 +7,6 @@ import com.dummyscoreboard.registry.ModItems;
 import com.trainingdummy.entity.DummyDisplayMetric;
 import com.trainingdummy.entity.DummyEntity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -49,14 +48,14 @@ public class ScoreboardDummyEntity extends DummyEntity {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if (source.getDirectEntity() instanceof Player player && player.getMainHandItem().is(Items.STICK)) {
-            level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ARMOR_STAND_BREAK,
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ARMOR_STAND_BREAK,
                     this.getSoundSource(), 1.0F, 1.0F);
-            this.spawnAtLocation(level, new ItemStack(ModItems.SCOREBOARD_DUMMY_SPAWNER.get()));
+            this.spawnAtLocation(new ItemStack(ModItems.SCOREBOARD_DUMMY_SPAWNER.get()));
             this.discard();
             return true;
         }
-        return super.hurtServer(level, source, amount);
+        return super.hurt(source, amount);
     }
 }

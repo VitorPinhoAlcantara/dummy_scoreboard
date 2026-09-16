@@ -7,6 +7,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Catches the crudest form of leaderboard cheating: `/attribute ... base set` (or any other means
@@ -36,6 +37,15 @@ public final class AttackIntegrity {
             Attributes.KNOCKBACK_RESISTANCE, 0.0,
             Attributes.LUCK, 0.0
     );
+
+    /**
+     * The combat attributes this check watches - also what {@link com.dummyscoreboard.snapshot.PlayerCombatSnapshot}
+     * captures for audit, since 1.21.1 has no bulk "pack every attribute" API to fall back to
+     * (unlike the 26.1.2 branch's {@code AttributeMap#pack()}); this is the same set anyway.
+     */
+    public static Set<Holder<Attribute>> trackedAttributes() {
+        return EXPECTED_BASE.keySet();
+    }
 
     public static boolean hasTamperedBase(ServerPlayer player) {
         for (Map.Entry<Holder<Attribute>, Double> expected : EXPECTED_BASE.entrySet()) {

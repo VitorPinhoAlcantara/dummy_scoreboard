@@ -3,9 +3,6 @@ package com.dummyscoreboard.registry;
 import com.dummyscoreboard.DummyScoreboardMod;
 import com.dummyscoreboard.entity.ScoreboardDummyEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -21,8 +18,7 @@ public final class ModEntities {
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(10)
                     .fireImmune()
-                    .build(ResourceKey.create(Registries.ENTITY_TYPE,
-                            Identifier.fromNamespaceAndPath(DummyScoreboardMod.MODID, "scoreboard_dummy"))));
+                    .build(DummyScoreboardMod.MODID + ":scoreboard_dummy"));
 
     private ModEntities() {
     }

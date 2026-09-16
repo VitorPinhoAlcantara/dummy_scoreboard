@@ -22,7 +22,7 @@ repositories {
     // public maven. Re-run that publish after any change to training_dummy before building here.
     maven {
         name = "TrainingDummyLocal"
-        url = uri("../training_dummy/repo")
+        url = uri("../training_dummy-1.21.1/repo")
     }
     // Curios API, dev-test only (see dependencies below) - our code never references Curios types
     // directly (com.trainingdummy.curios.CuriosCompat's public methods don't leak Curios types),
@@ -79,7 +79,10 @@ configurations {
 }
 
 dependencies {
-    implementation "com.trainingdummy:training_dummy:${trainingdummy_version}"
+    // Artifact id is "training_dummy-1.21.1" (not just "training_dummy") because that's the Gradle
+    // project name training_dummy's own settings.gradle derives from its worktree folder name at
+    // publish time - fragile if that folder is ever renamed, but matches what's actually published.
+    implementation "com.trainingdummy:training_dummy-1.21.1:${trainingdummy_version}"
 
     compileOnly "maven.modrinth:curios:${curios_version}"
     localRuntime "maven.modrinth:curios:${curios_version}"
@@ -96,6 +99,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             minecraft_version      : minecraft_version,
             minecraft_version_range: minecraft_version_range,
             neo_version            : neo_version,
+            loader_version_range   : loader_version_range,
             mod_id                 : mod_id,
             mod_name               : mod_name,
             mod_license            : mod_license,

@@ -12,10 +12,15 @@ public final class CommonConfig {
     // this mod without touching the config still gets to participate in a shared default
     // leaderboard instead of being local-only, while modpacks like ATM 11 get their own private one
     // by simply setting modpackId below.
-    private static final String DEFAULT_MODPACK_ID = "c0aa92ac-5a85-4f63-bf67-6c56e8352b77";
-    private static final String DEFAULT_MODPACK_API_KEY = "9da21d9679c774aa0ccc0a649310e52718a344bd04f33f3bb7c097f5e1ae1c29";
+    //
+    // This is its own modpack row, separate from the 26.1.2 branch's default - each Minecraft
+    // version this mod is built for gets its own default leaderboard, not one shared across all of
+    // them (same worker/database either way, just a different row per version).
+    private static final String DEFAULT_MODPACK_ID = "c66b7617-97de-484f-8d70-2c01d4ef28de";
+    private static final String DEFAULT_MODPACK_API_KEY = "80d3e91695ebfb4815eb92788670adb3760187604f8aaefb3443a357a61562f8";
     // Not a secret (it's a public HTTPS endpoint visible in every request anyway) - baked in purely
-    // so the default modpack works without the admin having to type this in themselves.
+    // so the default modpack works without the admin having to type this in themselves. Same worker
+    // as every other branch/version of this mod - only the modpack id/key above differ per version.
     private static final String DEFAULT_WORKER_BASE_URL = "https://dummyscoreboard-worker.vitoralcantara1722.workers.dev";
 
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();

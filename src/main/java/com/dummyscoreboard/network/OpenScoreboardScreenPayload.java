@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public record OpenScoreboardScreenPayload(
 ) implements CustomPacketPayload {
 
     public static final Type<OpenScoreboardScreenPayload> TYPE =
-            new Type<>(Identifier.fromNamespaceAndPath(DummyScoreboardMod.MODID, "open_scoreboard_screen"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(DummyScoreboardMod.MODID, "open_scoreboard_screen"));
 
     public static final StreamCodec<ByteBuf, OpenScoreboardScreenPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, OpenScoreboardScreenPayload::dummyEntityId,
