@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "trainingdummy:dummy_spawner",
-    "minecraft:diamond"
+    { "item": "trainingdummy:dummy_spawner" },
+    { "item": "minecraft:diamond" }
   ],
   "result": {
     "count": 1,
